@@ -14,27 +14,17 @@ CMD ["/sbin/my_init"]
 # ...put your own build instructions here...
 
 # Building Nodejs
-RUN apt-get update
-RUN apt-get install -y make curl python python-dev python-pip python-virtualenv
-RUN \
-  cd /tmp && \
-  curl http://nodejs.org/dist/node-latest.tar.gz | tar xvz  
-
-RUN cd /tmp/node-v* && \
-	./configure && \
+RUN apt-get update && \
+	apt-get install -y make curl python python-dev python-pip python-virtualenv && \
+  	cd /tmp && \
+  	curl http://nodejs.org/dist/node-latest.tar.gz | tar xvz  && \
+  	cd /tmp/node-v* && \
+  	./configure && \
   	CXX="g++ -Wno-unused-local-typedefs" && \
-  	make && make install && make clean && \
+  	make && make install && \
   	cd /tmp && \
   	rm -rf /tmp/node-v* && \
   	npm install -g npm && \
-  	echo -e '\n# Node.js\nexport PATH="node_modules/.bin:$PATH"' >> /root/.bashrc
+  	echo -e '\n# Node.js\nexport PATH="node_modules/.bin:$PATH"' >> /root/.bashrc && \
+	apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-
-# Define working directory.
-WORKDIR /data
-
-# Define default command.
-CMD ["bash"]
-
-# Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
